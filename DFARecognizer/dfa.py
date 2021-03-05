@@ -2,53 +2,99 @@
     Implementação de autômatos finitos determinísticos capazes
     de reconhecer expressões regulares/cadeias.
 
+    O funcionamento baseia-se em dicionários encadeados:
+    
+    {
+    Estado_0 : { "SimboloAceito": Prox_estado, ... "SimboloAceito": Prox_estado },
+        .               .            .         ...        .            .         ,
+    Estado_i : {        .            .         ...        .            .        },
+        .               .            .         ...        .            .         ,
+    Estado_f : {" ": -1}
+    }
+
+    -> Perceba que, o SimboloAceito deve ser uma string.
+    
+    -> O próximo estado e o estado atual (representado por
+    Prox_estado e Estado_i) são inteiros.
+    
+    -> O possível estado final sempre terá a flag (key) " "
+    para indicar o reconhecimento da cadeia. Note que,
+    em algumas sequências, a flag está entre os n simbolos
+    aceitos para aquele estado (e.g. 0*|1*, 0*11+).
+
+    --- Operações -------------------------------------------------
+    -> A operação * corresponde à: "O atual caractere (ou simbolo)
+    pode repetir 0 ou n vezes".
+
+    -> A operação | corresponde à operação de OR (OU).
+
+    -> A operação + corresponde à: "O atual caractere (ou simbolo)
+    pode repetir 1 ou n vezes".
+
+
     Autor: Vitor Acosta da Rosa
 """
 
 
-from expressionreader import ExpReader
+# Dicionário da sequência 010
+a_dict = {
+        0:{"0":1},
+        1:{"1":2},
+        2:{"0":3},
+        3:{" ":-1}
+        }
 
-#expr = {
-#        "0":{"0":"1"},
-#        "1":{"1":"2"},
-#        "2":{"0":"-1"}
-#       }
+# Dicionário da sequência 0*|1*
+b_dict = {
+        0:{"0":1, "1":2, " ":-1},
+        1:{"0":1," ":-1},
+        2:{"1":2," ":-1}
+        }
 
-def recognize(q0, sequence, expression):
-    char_count = 0
-    actual_state = q0
-    
+# Dicionário da sequência 0*11+
+c_dict = {
+        0:{"0":0, "1":1},
+        1:{"1":2},
+        2:{"1":2, " ":-1}
+        }
 
-    for c in sequence:
-        
-        if c not in expression[actual_state].keys():
-            print(f"Changing to {q0} state\n")
-            actual_state = q0
+def recognize(transition_table, initial_state, sequence):
+    """
+    Retorna se a sequência é aceita, dada a tabela de transição.
 
-        print(f"\nActual char: {c} -- ",end="")
-        
-        # expression[actual_state].keys() retorna todas as chaves
-        # e consequentemente, todos caracteres que podem ser
-        # reconhecidos pela expressão.
-        if c in expression[actual_state].keys():
-            print("Read:",c,end=" ")            
-            temp = actual_state
-            actual_state = expression[temp][c]
-            print("Actual state: ",actual_state)
+    Parameters
+    ----------
+    transition_table: Dict
+        Dicionário encadeado com o estado atual, simbolos aceitos
+        e próximos estados.
+    initial_state: Int
+        Estado inicial, por convenção dos autores, utilize 0.
+    sequence: str
+        Sequência a ser avaliada levando em consideração a tabela
+        de transição dada.
+    """
 
-            if actual_state == "-1":
-                return True          
-            
-        char_count += 1 
-   
+    current_state = initial_state
+    for char in sequence:
+        print(f"Entry symbol: {char}",end=" - ")
+        if char not in transition_table[current_state].keys():
+            print(f" Invalid symbol  - ")
+            return False
+
+        else: # Muda de estado
+
+            print(f"  Valid symbol  ",end=" - ")
+            current_state = transition_table[current_state][char]  
+            print(f"Next state: {current_state}")
+
+    # If utilizado para sequências que contam com a Kleene star
+    # (operador *) o qual pode não contar com o símbolo em questão.
+    # Perceba que " " é uma flag definida no dicionário, e
+    # representa um possível estado final.
+    if " " in transition_table[current_state].keys():
+        return True
+
     return False
 
-
-raw_expr = input(str("Insira a expressão: "))
-expr = ExpReader(raw_expr)
-e_dict = expr.get_dictionary()
-print("Dicionário detectado: \n",e_dict)
-
-s = input(str("Insira a sequencia: "))
-
-print(recognize("0",s,e_dict))
+s = input(str("Insert sequence: "))
+print(recognize(c_dict, 0, s))
