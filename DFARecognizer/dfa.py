@@ -77,7 +77,15 @@ c_dict = {
         2:{"1":2, " ":-1}
         }
 
-def recognize(transition_table, initial_state, sequence):
+alphabet = ["0","1"]
+
+def recognize(transition_table, initial_state, sequence, min_len, alphabet):
+    if len(sequence) < min_len:
+        return "Rejected because the string is less than acceptable according to the regular expression."
+    else:
+        for letter in sequence:
+            if letter not in alphabet:
+                return "Rejected because it contains a character not contained in the alphabet."
     """
     Retorna se a sequência é aceita, dada a tabela de transição.
 
@@ -98,7 +106,7 @@ def recognize(transition_table, initial_state, sequence):
         print(f"Entry symbol: {char}",end=" - ")
         if char not in transition_table[current_state].keys():
             print(f" Invalid symbol  - ")
-            return False
+            return "Rejected because it does not comply with the regular expression rule"
 
         else: # Muda de estado
 
@@ -113,17 +121,17 @@ def recognize(transition_table, initial_state, sequence):
     if " " in transition_table[current_state].keys():
         return True
 
-    return False
+    return "Rejected because it does not comply with the regular expression rule"
 
 print("Which expression use?\n option | expression\n    1   | 010\n    2   | 0*|1*\n    3   | 0*11+\n\n-->Option:")
 op = int(input())
 s = str(input("Insert sequence: "))
 
 if op == 1:
-    print(recognize(a_dict, 0, s))
+    print(recognize(a_dict, 0, s, 3, alphabet))
 elif op == 2:
-    print(recognize(b_dict, 0, s))
+    print(recognize(b_dict, 0, s, 0, alphabet))
 elif op == 3:
-    print(recognize(c_dict, 0, s))
+    print(recognize(c_dict, 0, s, 2, alphabet))
 else:
     print("Invalid option\nClosing program...")
