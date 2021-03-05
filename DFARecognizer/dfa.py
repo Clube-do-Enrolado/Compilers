@@ -1,5 +1,4 @@
 """
-    |ATENÇÃO|: Não esqueça de trocar o dicionário na última linha do código.
     
     Este código possuí uma solução genérica através do uso de dicionários
     para a tomada de decisão sobre qual é o próximo estado do automato.
@@ -15,9 +14,10 @@
 
     c) c_dict
         Expressão Regular: 0*11+
-"""
 
-"""
+    
+    Descrição:
+
     Implementação de autômatos finitos determinísticos capazes
     de reconhecer expressões regulares/cadeias.
 
@@ -115,13 +115,15 @@ def recognize(transition_table, initial_state, sequence):
 
     return False
 
-s = input(str("Insert sequence: "))
+print("Which expression use?\n option | expression\n    1   | 010\n    2   | 0*|1*\n    3   | 0*11+\n\n-->Option:")
+op = int(input())
+s = str(input("Insert sequence: "))
 
-# |               | ATENÇÃO |             |
-# |Coloque o dicionário desejado aqui!    |
-# |                                       |
-# |Caso não coloque o dicionário desejado,|
-# |o resultado não será o esperado!       |
-# |               | ATENÇÃO |             |
-
-print(recognize(c_dict, 0, s))
+if op == 1:
+    print(recognize(a_dict, 0, s))
+elif op == 2:
+    print(recognize(b_dict, 0, s))
+elif op == 3:
+    print(recognize(c_dict, 0, s))
+else:
+    print("Invalid option\nClosing program...")
