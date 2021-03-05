@@ -1,4 +1,23 @@
 """
+    |ATENÇÃO|: Não esqueça de trocar o dicionário na última linha do código.
+    
+    Este código possuí uma solução genérica através do uso de dicionários
+    para a tomada de decisão sobre qual é o próximo estado do automato.
+
+    Cada item do exercício possuí um dicionário.
+
+    |DICIONÁRIOS|:
+    a) a_dict
+        Expressão Regular: 010
+
+    b) b_dict
+        Expressão Regular: 0*|1*
+
+    c) c_dict
+        Expressão Regular: 0*11+
+"""
+
+"""
     Implementação de autômatos finitos determinísticos capazes
     de reconhecer expressões regulares/cadeias.
 
@@ -97,4 +116,12 @@ def recognize(transition_table, initial_state, sequence):
     return False
 
 s = input(str("Insert sequence: "))
+
+# |               | ATENÇÃO |             |
+# |Coloque o dicionário desejado aqui!    |
+# |                                       |
+# |Caso não coloque o dicionário desejado,|
+# |o resultado não será o esperado!       |
+# |               | ATENÇÃO |             |
+
 print(recognize(c_dict, 0, s))
