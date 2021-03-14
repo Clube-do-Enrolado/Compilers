@@ -1,57 +1,98 @@
-import os
-import sys
-
-sys.path.insert(1, os.getcwd() + "\\Lib")
-
-# from dfa import *
-
-accept_chars = ["==", "=", ":", "+", "-", "*", "/", "(", ")", ";", "+=", "-="]
+tokens = {
+        "keyword":  ["if","else","elif","def","for","while","return","break"],
+        "operator": ["+","-","*","/","=","==","!=","+=","-=","*=","/="],
+        "boolean":  ["True","False"],
+        ":" :       [":"]
+         }
 
 
-def splitString_v1(s):
-    strList = []
-    strTemp = ""
+def is_integer(s):
+   """
+    is_integer
+    -----------
+    Função que verifica se uma dada string é uma variável
+    que obedece a regex: [0-9]^+
 
-    for i in range(len(s)):
-        if s[i].isspace():
-            if strTemp != "":
-                strList.append(strTemp)
-            strTemp = ""
+    Parameters:
+    s (string): String a ser analisada.
 
-        elif s[i] in accept_chars:
-            if strTemp != "":
-                strList.append(strTemp)
+    Return:
+    True: Caso a string obedeça a regex.
+    False: Caso a string não obedeça a regex.
 
-            if s[i] + s[i - 1] in accept_chars:
-                strList[-1] = strList[-1] + s[i]
-            else:
-                strList.append(s[i])
+    """
+    if s.isdigit(): 
+        return True  
+    return False
 
-            strTemp = ""
+def is_float(s):
+   """
 
-        else:
-            if i == len(s) - 1:
-                strTemp += s[i]
-                strList.append(strTemp)
+    is_float
+    -----------
+    Função que verifica se uma dada string é uma variável
+    que obedece a regex: [0-9]^+.[0-9]^+
 
-            strTemp += s[i]
+    Parameters:
+    s (string): String a ser analisada.
 
-    return strList
+    Return:
+    True: Caso a string obedeça a regex.
+    False: Caso a string não obedeça a regex.
 
+    """
+    try:
+        flt = s.split(".")
+        if flt[0].isdigit() and flt[1].isdigit() and len(flt) == 2:
+            return True
+     
+        return False
+    except:
+        return False
 
-def splitString(s):
-    s = s.split(" ")
-    newS = []
-    for word in s:
-        if word.find(":") > 0:
-            newS.append(word.replace(":", ""))
-            newS.append(":")
-        else:
-            newS.append(word)
+def is_string(s):
+    """
 
-    return newS
+    is_string
+    -----------
+    Função que verifica se uma dada string é uma variável
+    que obedece a regex: "[\s-!]*[#-$]*[&-[]*[]-~]*"
 
+    Parameters:
+    s (string): String a ser analisada.
 
-s = "if shazum: == def:"
+    Return:
+    True: Caso a string obedeça a regex.
+    False: Caso a string não obedeça a regex.
 
-print(splitString(s))
+    """
+    if s[0] == '"' and s[-1] == '"':
+        return True
+    return False
+
+def is_variable(s):
+    """
+
+    is_variable
+    -----------
+    Função que verifica se uma dada string é uma variável
+    que obedece a regex: [_-_]*[A-Z]*[a-z]+|[_-_]*[A-Z]+[a-z]*|[_-_]+[A-Z]*[a-z]*[0-9]*
+
+    Parameters:
+    s (string): String a ser analisada.
+
+    Return:
+    True: Caso a string obedeça a regex.
+    False: Caso a string não obedeça a regex.
+
+    """
+    if s[0] == "_" or (s[0] >= 'A' and s[0] <= 'Z') or (s[0] >= 'a' and s[0] <= 'z'):
+        special = []
+        for c in s:
+            if c.isalnum() == False:
+                special.append(c)
+        
+        if len(special) != 1 or special[0] != "_":
+            return False
+        return True
+    return False
