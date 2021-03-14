@@ -7,7 +7,7 @@ tokens = {
 
 
 def is_integer(s):
-   """
+    """
     is_integer
     -----------
     Função que verifica se uma dada string é uma variável
@@ -26,7 +26,7 @@ def is_integer(s):
     return False
 
 def is_float(s):
-   """
+    """
 
     is_float
     -----------
