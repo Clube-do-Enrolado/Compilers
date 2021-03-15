@@ -10,11 +10,22 @@
      |      |- Vitor Acosta da Rosa              | 22.218.006-9 |
      |
      | 2ª Atividade Prática de Compiladores
-     | Nome: Componente Separador de String em Python
+     | Name: Componente Separador de String em Python
 
      [DESCRIÇÃO]
         Este componente visa separar strings com a sintaxe em Python. Para utiliza-lo si-
         ga os comentários ao longo das funções.
+
+    [TOKENS AND REGEX]
+
+        keyword = {if, else, elif, def, for, while, return, break}
+        operator = {==, !=, >=, <=, +=, -=, *=, /=, =, >, <, +, -, *, /}
+        boolean = {True, False}
+        : = {:}
+        interger = {[ 0-9 ]+}
+        float = {[ 0-9 ]+.[ 0-9 ]+}
+        string = {"([ \s-! ]*[ #-$ ]*[ &-\[ ]*[ \]-~ ]*)*"}
+        variable = {([ _-_ ]*[ A-Z ]*[ a-z ]+ | [ _-_ ]*[ A-Z ]+[ a-z ]* | [ _-_ ]+[ A-Z ]*[ a-z ]*)([ 0-9 ]*)}
 
 
     [ENGLISH]
@@ -33,6 +44,17 @@
     [DESCRIPTION]
         This component aims to split a string in Python's syntax. To use it, follow the
         commentaries along with the functions.
+
+    [TOKENS AND REGEX]
+
+        keyword = {if, else, elif, def, for, while, return, break}
+        operator = {==, !=, >=, <=, +=, -=, *=, /=, =, >, <, +, -, *, /}
+        boolean = {True, False}
+        : = {:}
+        interger = {[ 0-9 ]+}
+        float = {[ 0-9 ]+.[ 0-9 ]+}
+        string = {"([ \s-! ]*[ #-$ ]*[ &-\[ ]*[ \]-~ ]*)*"}
+        variable = {([ _-_ ]*[ A-Z ]*[ a-z ]+ | [ _-_ ]*[ A-Z ]+[ a-z ]* | [ _-_ ]+[ A-Z ]*[ a-z ]*)([ 0-9 ]*)}
 """
 
 
@@ -49,15 +71,23 @@
 #   returned will be the last item of the split (Ex. word="5").
 #
 #   [PARAM]
-#    | opMiddle(string, string, list[strings])
-#    | return string, string
+#    | opMiddle(string, list[string], list[strings])
+#    | return list[string], string
 
-def opMiddle(word, newS, operator):
+def opMiddle(word, newS, operator, key):
+    global op
     word = word.replace(operator, " " + operator + " ").split(" ")
-    for i in word:
-        if i != "":
-            newS.append(i)
-    word = word[2]
+    for i in range(len(word)):
+        if word[i] != "":
+            if word[i] != operator:
+                newS, finalWord = fullVerify(word[i], newS, op, key + 1)
+                if finalWord == word[i]:
+                    newS.append(word[i])
+                    if i == 2:
+                        word[2] = finalWord
+            else:
+                newS.append(word[i])
+    word = word[-1]
     return newS, word
 
 # [PORTUGUÊS]
@@ -73,8 +103,8 @@ def opMiddle(word, newS, operator):
 #   returned will be the string without the operator (Ex. word="else").
 #
 #   [PARAM]
-#    | opAfter(string, string, list[strings])
-#    | return string, string
+#    | opAfter(string, list[string], list[strings])
+#    | return list[string], string
 
 def opAfter(word, newS, operator):
     word = word.replace(operator, "")
@@ -95,12 +125,49 @@ def opAfter(word, newS, operator):
 #   returned will be the string without the operator (Ex. word="myVar").
 #
 #   [PARAM]
-#    | opBefore(string, string, list[strings])
-#    | return string, string
+#    | opBefore(string, list[string], list[strings])
+#    | return list[string], string
 
 def opBefore(word, newS, operator):
     newS.append(operator)
     word = word.replace(operator, "")
+    return newS, word
+
+# [PORTUGUÊS]
+#   Está função irá fazer a verificação de "operadores" em uma dada palavra. Realiza
+#   os callbacks das funções opBefore, opMiddle e opAfter respectivamente. Assim ga-
+#   rantimos que não exista "operadores" reconhecidos na lista grudados com uma pala-
+#   vra.
+#
+# [ENGLISH]
+#   This function will do a verification at the "operators" in a given word. It callbacks
+#   the fuctions opBefore, opMiddle and opAfter respectivily. By that is guaranted that
+#   there's no recognized "operators" of the list joined in a word.
+#
+#   [PARAM]
+#    | opAfter(string, list[string], list[strings])
+#    | return list[string], string
+
+def fullVerify(word, newS, op, key):
+    find = [False, False, False]
+    for i in op:
+        if word.find(i) > -1 and word.find(i) < len(i) and word != "":
+            newS, word = opBefore(word, newS, i)
+            find[0] = True
+            
+    for i in range(len(op)):
+        wIndex = word.find(op[i])
+        if wIndex >= len(op[i]) and wIndex < len(word) - len(op[i]) and word != "" and i < 9:
+            newS, word = opMiddle(word, newS, op[i], key)
+            find[1] = True
+        elif wIndex >= len(op[i]) and wIndex < len(word) - len(op[i]) and word != "" and word[wIndex] + word[wIndex+1] not in op[0:9]:
+            newS, word = opMiddle(word, newS, op[i], key)
+            find[1] = True
+    for i in op:
+        if  word.find(i) != -1 and word.find(i) >= len(word) - len(i) and word != "":
+            newS, word = opAfter(word, newS, i)
+            find[2] = True
+
     return newS, word
 
 
@@ -126,58 +193,84 @@ def opBefore(word, newS, operator):
 
 def splitString(s):
     global op
+    global string
     s = s.split(" ")
     newS  = []
     for word in s:
         wordTemp = word
-
-        if word.isalpha():
+        if word.isalnum():
             newS.append(word)
 
         else:
+            # [PORTUGUÊS]
+            #   Tratamento de String.
+            # [ENGLISH]
+            #   String Treatment.
+            if word[0] == '"':
+                newS.append(word)
+                if word[-1] == '"':
+                    string = False
+                continue
+
+            if string == True:
+                # [PORTUGUÊS]
+                #   Se encontrar alguma ", ele deve juntar a última parte da string.
+                # [ENGLISH]
+                #   If it finds any ", it should join the last part of the string.
+                if word.find('"') > -1:
+                    string = not string
+                    word = word.split('"')
+                    newS[-1] += ' ' + word[0] + '"'
+                    word = word[1]
+                    if word == '':
+                        continue
+                else:
+                    newS[-1] += ' ' + word
+                    continue
+
+            # [PORTUGUÊS]
+            #   Daqui para baixo é feito o tratamento da palavra caso ela contenha
+            #   algum operador.
+            # [ENGLISH]
+            #   Below is made a treatment for the word just in case it contains any
+            #   "operator".
             if word in op:
                 newS.append(op[op.index(word)])
                 continue
+            
+            newS, word = fullVerify(word, newS, op, 0)
 
-            for i in op:
-                if word.find(i) > -1 and word.find(i) < len(i) and word != "":
-                    newS, word = opBefore(word, newS, i)
-                    
-            for i in op:
-                if word.find(i) >= len(i) and word.find(i) < len(word) - len(i) and word != "":
-                    newS, word = opMiddle(word, newS, i)
-
-            for i in op:
-                if word.find(i) >= len(word) - len(i) and word != "":
-                    newS, word = opAfter(word, newS, i)
-
-            if wordTemp == word:
+            if wordTemp == word or word != newS[-1] and word != newS[-2]:
                 newS.append(word)
+                continue
 
-    return newS
+    finalS = []
+    for i in newS:
+        finalS.append(i)
+        if i[0] == '"' and i[-1] != '"':
+            string = True
+            continue
+        if string == True:
+            finalS.pop()
+            finalS[-1] += " " +  i
+            if i.find('"') != -1:
+                string = False
 
-# [PORTUGUÊS]
-#   Esta é a lista de operadores. Os operadores que devem ser filtrados devem estar aqui.
-#
-# [ENGLISH]
-#   This is the operator's list. The operators that should be filtered must be here.
-
-op = [":", "==", "!=", "=", "+", "-", "*", "/"]
-
-# [PORTUGUÊS]
-#   Esta é a string que está sendo testada. Sinta-se livre para testar sua string!
-#
-# [ENGLISH]
-#   This is the string that is being tested. Feel free to test your string!
-
-s = "if: == el_se+for = / + my_Var"
+    return finalS
 
 # [PORTUGUÊS]
-#   Imprime a lista de lexemas.
+#   Esta é a lista de operadores. Os "operadores" que devem ser filtrados devem estar aqui.
 #
 # [ENGLISH]
-#   Print the Lexeme's List.
+#   This is the operator's list. The "operators" that should be filtered must be here.
 
-print(splitString(s))
+op = [":", "==", "!=", ">=", "<=", "+=", "-=", "*=", "/=", "=", ">", "<", "+", "-", "*", "/"]
 
 
+# [PORTUGUÊS]
+#   Este boolean controla se temos string ou não.
+#
+# [ENGLISH]
+#   This boolean controls if we have string or not.
+
+string = False
