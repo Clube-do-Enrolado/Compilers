@@ -1,0 +1,48 @@
+Autores: Vitor Acosta da Rosa			(22.218.006-9)
+	 Rubens de Araújo Rodrigues Mendes	(22.218.009-3)
+	 Rafael Zacarias Palierini		(22.218.030-9)
+	 Andy Silva Barbosa			(22.218.025-9)
+
+Etapa 2: Definição dos tokens e expressões regulares.
+
+ +-----------------------------------------------------+
+ | Instruções para o uso do arquivo lexicalAnalyser.py |
+  \  responsável por retornar os Tokens reconhecidos  /
+   ---------------------------------------------------
+
+--- !!ATENÇÃO!! ---
+É de suma importância que os arquivos "tokenGenerator.py",
+"stringSplitter.py" e "lexicalAnalyser.py" fiquem no mesmo
+diretório, pois são interdependentes.
+
+Uma vez que os três arquivos encontram-se no mesmo diretório,
+basta executar o arquivo "lexicalAnalyser.py":
+ |
+ +-> Caso esteja em linux basta utilizar python3 lexicalAnalyser.py
+ +-> Caso esteja em windows basta clicar duas vezes no arquivo.
+ +-> Independente do sistema operacional, verifique se o python 3.8.5
+ (ou superior) está instalado.
+
+Ao executar o arquivo "lexicalAnalyser.py", o programa ficará
+aguardando uma entrada do usuário. Essa entrada é por exemplo
+uma linha de código a ser analisada e consequentemente estruturada
+em uma lista de tuplas do tipo (token_name, value).
+
+EXEMPLOS DE INPUTS PARA O ARQUIVO lexicalAnalyser.py:
+if name == "João":
+  |
+  +-> Deve retornar [('keyword', 'if'), ('variable', 'name'), ('operator', '=='), ('string', '"João"'), (':', ':')]
+
+idade = 20
+  |
+  +-> Deve retornar [('variable', 'idade'), ('operator', '='), ('integer', '20')]
+
+while i = 1:
+  |
+  +-> Deve retornar [('keyword', 'while'), ('variable', 'i'), ('operator', '='), ('integer', '0'), (':', ':')]
+  
+Todas funções e lógicas implementadas em todos arquivos utilizados
+nessa etapa encontram-se documentadas nos códigos fonte.
+  
+Todas funções criadas nos arquivos "tokenGenerator.py" e "stringSplitter.py"
+estão documentadas, e podem ser acessadas via help() ou nome_da_funcao.__doc__.

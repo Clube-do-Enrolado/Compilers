@@ -7,7 +7,7 @@ t = []
 
 # Lista com todas os lexemas separados.
 lexeme = splitString(s)
-
+print(lexeme)
 # Loop para verificar os lexemas e criar os tokens.
 for word in lexeme:
     if word in tokens["keyword"]:

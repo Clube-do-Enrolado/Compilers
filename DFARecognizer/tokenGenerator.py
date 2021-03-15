@@ -1,5 +1,5 @@
 tokens = {
-        "keyword":  ["if","else","elif","def","for","while","return","break"],
+        "keyword":  ["if","else","elif","def","for","while","return","break","print","input"],
         "operator": ["+","-","*","/","=","==","!=","+=","-=","*=","/="],
         "boolean":  ["True","False"],
         ":" :       [":"]
@@ -91,8 +91,7 @@ def is_variable(s):
         for c in s:
             if c.isalnum() == False:
                 special.append(c)
-        
-        if len(special) != 1 or special[0] != "_":
+        if len(special) > 1 or (len(special) > 0 and special[0] != "_"):
             return False
         return True
     return False
